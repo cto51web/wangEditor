@@ -17,7 +17,7 @@ export type ResType = {
 
 class UploadImg {
     private editor: Editor
-
+    private addUrl = '' // 跳转超链接
     constructor(editor: Editor) {
         this.editor = editor
     }
@@ -34,15 +34,15 @@ class UploadImg {
         const t = (text: string, prefix: string = i18nPrefix): string => {
             return editor.i18next.t(prefix + text)
         }
-
         // 设置图片alt
         const altText = alt ? `alt="${alt}" ` : ''
+        href = this.addUrl ? this.addUrl : href
         const hrefText = href ? `data-href="${encodeURIComponent(href)}" ` : ''
+        let imgHtml = `<img src="${src}" ${altText}${hrefText}style="max-width:100%;" contenteditable="false"/>`
+        this.addUrl = ''
+
         // 先插入图片，无论是否能成功
-        editor.cmd.do(
-            'insertHTML',
-            `<img src="${src}" ${altText}${hrefText}style="max-width:100%;" contenteditable="false"/>`
-        )
+        editor.cmd.do('insertHTML', imgHtml)
         // 执行回调函数
         config.linkImgCallback(src, alt, href)
 
@@ -67,11 +67,11 @@ class UploadImg {
      * 上传图片
      * @param files 文件列表
      */
-    public uploadImg(files: FileList | File[]): void {
+    public uploadImg(files: FileList | File[], addUrlV: string = ''): void {
         if (!files.length) {
             return
         }
-
+        this.addUrl = addUrlV
         const editor = this.editor
         const config = editor.config
 
