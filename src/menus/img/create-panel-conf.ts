@@ -69,6 +69,9 @@ export default function (editor: Editor): ImgPanelConf {
             <div style="display:none;">
                 <input id="${upFileId}" type="file" ${fileMultipleAttr} accept="${accepts}"/>
             </div>
+            <div>
+                跳转链接：<input type="text" id="uploadAddLink" />
+            </div>
         </div>`
     const uploadEvents: TabEventConf[] = [
         // 触发选择图片
@@ -102,11 +105,15 @@ export default function (editor: Editor): ImgPanelConf {
                     // 返回 true 可关闭 panel
                     return true
                 }
-
+                const $linkUrl = $('#' + 'uploadAddLink')
+                let addUrl = ''
+                if ($linkUrl && $linkUrl.val() && $linkUrl.val().trim()) {
+                    addUrl = $linkUrl.val().trim()
+                }
                 // 获取选中的 file 对象列表
                 const fileList = fileElem.files
                 if (fileList?.length) {
-                    uploadImg.uploadImg(fileList)
+                    uploadImg.uploadImg(fileList, addUrl)
                 }
 
                 // 判断用于打开文件的input，有没有值，如果有就清空，以防上传同一张图片时，不会触发change事件
